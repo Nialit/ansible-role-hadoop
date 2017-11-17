@@ -27,7 +27,7 @@
    - restart hadoop-datanode
    - restart yarn-nodemanager
 
-- command: "{{ hadoop_home }}/bin/hdfs namenode -format creates=/tmp/hadoop-root/dfs/name"
+- command: "{{ hadoop_home }}/bin/hdfs namenode -format creates={{hdfs_namenode_path}}"
   when: (hadoop_type_of_node == 'master') or (hadoop_type_of_node == 'namenode')
 
 - iptables: chain=INPUT jump=ACCEPT protocol=tcp destination_port={{item}}

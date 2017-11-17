@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 <configuration>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>file://{{hdfs_namenode_path}}</value>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>file://{{hdfs_datanode_path}}</value>
+	</property>
 {% for key, value in hdfs_props.iteritems() %}
 	<property>
 		<name>{{ key }}</name>

@@ -1,4 +1,17 @@
 ---
+- user:
+    name: "{{hadoop_user_name}}"
+    groups: "root,sudo"
+
+- file:
+    path: "{{item}}"
+    owner: "{{hadoop_user_name}}"
+    group: root
+    mode: 0640
+    state: directory
+  with_items:
+    - "{{hdfs_datanode_path}}"
+
 # Add a fast check to speed reconfiguration
 - stat: path=/opt/hadoop
   register: hadoop_installed

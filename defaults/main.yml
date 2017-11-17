@@ -2,6 +2,12 @@
 hadoop_type_of_node: slave
 # Hadoop base directory to install the software
 hadoop_home: /opt/hadoop-2.X
+# User servicing hadoop(hdfs)
+hadoop_user_name: hadoop
+# Local path where hdfs namenode will be placed
+hdfs_namenode_path: "/home/{{hadoop_user_name}}/dfs/name"
+# Local path where hdfs datanode will be placed
+hdfs_datanode_path: "/home/{{hadoop_user_name}}/dfs/data"
 # List of servers to download the hadoop code
 hadoop_mirrors: [ "http://ftpgrycap.i3m.upv.es/src/", "http://apache.rediris.es/hadoop/core/stable2/", "http://www-eu.apache.org/dist/hadoop/common/stable2/" ]
 # Hadoop version to install
