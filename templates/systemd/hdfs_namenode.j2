@@ -1,0 +1,16 @@
+[Unit]
+Description=Hdfs namenode
+Documentation=https://hadoop.apache.org/docs/stable/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+User={{hadoop_user_name}}
+ExecStart={{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs start namenode
+ExecStop={{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs stop namenode
+Environment=HADOOP_HOME=/opt/hadoop/
+PIDFile=/tmp/hadoop-{{hadoop_user_name}}-namenode.pid
+
+[Install]
+WantedBy=multi-user.target

@@ -1,13 +1,20 @@
 ---
-- user:
+- name: create hadoop group
+  group:
     name: "{{hadoop_user_name}}"
-    groups: "root,sudo"
+    state: present
 
-- file:
+- name: create hadoop user
+  user:
+    name: "{{hadoop_user_name}}"
+    groups: "sudo, {{hadoop_user_name}}"
+
+- name: create hadoop dirs
+  file:
     path: "{{item}}"
     owner: "{{hadoop_user_name}}"
-    group: root
-    mode: 0640
+    group: "{{hadoop_user_name}}"
+    mode: 0750
     state: directory
   with_items:
     - "{{hdfs_datanode_path}}"

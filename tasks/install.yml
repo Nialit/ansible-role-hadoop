@@ -30,13 +30,13 @@
   - unzip
   - openjdk-8-jre
 
-- get_url: url={{ hadoop_mirrors|random }}/hadoop-{{ hadoop_version }}.tar.gz dest=/opt/hadoop-{{ hadoop_version }}.tar.gz force=no
+- get_url: url={{ hadoop_mirrors|random }}/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz dest=/opt/hadoop-{{ hadoop_version }}.tar.gz force=no
   register: result
   until: result|success
   retries: 5
   delay: 2
 
-- unarchive: src=/opt/hadoop-{{ hadoop_version }}.tar.gz dest=/opt creates=/opt/hadoop-{{ hadoop_version }} copy=no
+- unarchive: src=/opt/hadoop-{{ hadoop_version }}.tar.gz dest=/opt creates=/opt/hadoop-{{ hadoop_version }} copy=no owner={{hadoop_user_name}} group={{hadoop_user_name}}
 
 - file: dest={{ hadoop_home }} src=/opt/hadoop-{{ hadoop_version }} state=link
 

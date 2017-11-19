@@ -1,25 +1,32 @@
-- name: restart hadoop-dfs
-  action: shell {{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs stop namenode; {{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs start namenode
-  when: ( hadoop_type_of_node == 'master' ) or ( hadoop_type_of_node == 'namenode' )
-  
-- name: restart yarn-resourcemanager
-  action: shell {{ hadoop_home }}/sbin/yarn-daemon.sh stop resourcemanager; {{ hadoop_home }}/sbin/yarn-daemon.sh start resourcemanager
-  when: ( hadoop_type_of_node == 'master' ) or ( hadoop_type_of_node == 'resourcemanager' )
-   
-- name: restart hadoop-datanode
-  action: shell {{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs stop datanode; {{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs start datanode
-  when: ( hadoop_type_of_node == 'slave' ) or ( hadoop_type_of_node == 'datanode' )
-  
-- name: restart yarn-nodemanager
-  action: shell {{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager; {{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager
-  when: ( hadoop_type_of_node == 'slave' ) or ( hadoop_type_of_node == 'nodemanager' )
-  
 - name: refreshDFSNodes
   command: "{{ hadoop_home }}/bin/hdfs dfsadmin -refreshNodes"
-  when: ( hadoop_type_of_node == 'master' ) or ( hadoop_type_of_node == 'namenode' )
+  when: '"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node'
   ignore_errors: yes
+  become: true
+  become_user: "{{hadoop_user_name}}"
 
 - name: refreshYarnNodes
   command: "{{ hadoop_home }}/bin/yarn rmadmin -refreshNodes"
-  when: ( hadoop_type_of_node == 'master' ) or ( hadoop_type_of_node == 'resourcemanager' )
+  when: '"master" in hadoop_type_of_node or "resourcemanager" in hadoop_type_of_node'
   ignore_errors: yes
+  become: true
+  become_user: "{{hadoop_user_name}}"
+ 
+- name: reload systemd configuration
+  become: yes
+  command: systemctl daemon-reload
+  listen: reload systemd configuration
+
+# Restart services and ensure they are enabled
+
+- name: restart namenode service
+  become: yes
+  service: name=hdfs_namenode state=restarted enabled=yes
+  listen: restart namenode service
+  
+- name: restart datanode service
+  become: yes
+  service: name=hdfs_datanode state=restarted enabled=yes
+  listen: restart datanode service
+
+
