@@ -55,17 +55,15 @@
   notify:
    - reload systemd configuration
    - restart namenode service
-   - refreshDFSNodes
-   - refreshYarnNodes
 
 - name: Restart namenode
-  when: restart and '"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node'
+  when: restart is defined and restart == true and ('"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node')
   command: /bin/true
   notify:
    - restart namenode service
 
 - name: Restart datanode
-  when: restart and '"slave" in hadoop_type_of_node or "datanode" in hadoop_type_of_node'
+  when: restart is defined and restart == true and ('"slave" in hadoop_type_of_node or "datanode" in hadoop_type_of_node')
   command: /bin/true
   notify:
    - restart datanode service
