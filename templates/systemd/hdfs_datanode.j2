@@ -10,7 +10,7 @@ User={{hadoop_user_name}}
 ExecStart={{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs start datanode
 ExecStop={{ hadoop_home }}/sbin/hadoop-daemon.sh  --script hdfs stop datanode
 Environment=HADOOP_HOME=/opt/hadoop/
-PIDFile=/tmp/hadoop-{{hadoop_user_name}}-namenode.pid
+PIDFile=/tmp/hadoop-{{hadoop_user_name}}-datanode.pid
 
 [Install]
 WantedBy=multi-user.target

@@ -20,7 +20,9 @@
    - restart datanode service
 
 - command: "{{ hadoop_home }}/bin/hdfs namenode -format creates={{hdfs_namenode_path}}"
-  when: (hadoop_type_of_node == 'master') or (hadoop_type_of_node == 'namenode')
+  become: yes
+  become_user: "{{hadoop_user_name}}"
+  when: '"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node'
 
 - iptables: chain=INPUT jump=ACCEPT protocol=tcp destination_port={{item}}
   ignore_errors: yes
@@ -40,21 +42,30 @@
 
 #Copy the systemd specific file if systemd is installed
 - name: Copy Systemd File for datanode
-  become: yes
   template: src=systemd/hdfs_datanode.j2 dest=/usr/lib/systemd/system/hdfs_datanode.service mode=0644 force=yes
   when: '"slave" in hadoop_type_of_node or "datanode" in hadoop_type_of_node'
   notify:
-  - reload systemd configuration
-  - restart datanode service
+   - reload systemd configuration
+   - restart datanode service
 
   #Copy the systemd specific file if systemd is installed
 - name: Copy Systemd File for namenode
-  become: yes
   template: src=systemd/hdfs_namenode.j2 dest=/usr/lib/systemd/system/hdfs_namenode.service mode=0644 force=yes
   when: '"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node'
   notify:
-  - reload systemd configuration
-  - restart namenode service
-  - refreshDFSNodes
-  - refreshYarnNodes
+   - reload systemd configuration
+   - restart namenode service
+   - refreshDFSNodes
+   - refreshYarnNodes
 
+- name: Restart namenode
+  when: restart and '"master" in hadoop_type_of_node or "namenode" in hadoop_type_of_node'
+  command: /bin/true
+  notify:
+   - restart namenode service
+
+- name: Restart datanode
+  when: restart and '"slave" in hadoop_type_of_node or "datanode" in hadoop_type_of_node'
+  command: /bin/true
+  notify:
+   - restart datanode service
